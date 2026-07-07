@@ -18,3 +18,5 @@ class TokenResponse(TypedDict):
     access_token: str
     refresh_token: str
 
+class RefreshRequestDTO(SQLModel):
+    refresh_token: str

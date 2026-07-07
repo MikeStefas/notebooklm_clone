@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 from app.core.db import get_session
-from app.features.auth.schemas import SignUpDTO, SignInDTO
+from app.features.auth.schemas import SignUpDTO, SignInDTO, RefreshRequestDTO
 from app.features.auth.service import AuthService
 
 from fastapi.security import OAuth2PasswordRequestForm
@@ -21,3 +21,7 @@ async def sign_up(payload: SignUpDTO, session: Session = Depends(get_session)):
 async def sign_in(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
     payload = SignInDTO(email=form_data.username, password=form_data.password)
     return AuthService.sign_in(session, payload)
+
+@router.post("/refresh/")
+async def refresh_token(payload: RefreshRequestDTO, session: Session = Depends(get_session)):
+    return AuthService.refresh_tokens(session, payload.refresh_token)
