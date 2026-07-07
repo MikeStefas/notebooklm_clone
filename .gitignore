@@ -1,15 +1,15 @@
 
-# Frontend 
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-frontend/build/
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-frontend/.pnpm-debug.log*
-frontend/*.tsbuildinfo
-frontend/next-env.d.ts
+# frontend
+FRONTEND/node_modules/
+FRONTEND/.next/
+FRONTEND/out/
+FRONTEND/build/
+FRONTEND/npm-debug.log*
+FRONTEND/yarn-debug.log*
+FRONTEND/yarn-error.log*
+FRONTEND/.pnpm-debug.log*
+FRONTEND/*.tsbuildinfo
+FRONTEND/next-env.d.ts
 
 # Backend 
 API/__pycache__/
@@ -96,8 +96,8 @@ API/database.db-journal
 .env.production.local
 .env*.local
 API/.env
-frontend/.env
-frontend/.env*.local
+FRONTEND/.env
+FRONTEND/.env*.local
 
 # MinIO data
 API/minio/data/
