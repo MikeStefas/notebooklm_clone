@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fcf6402e-27f2-4230-b568-4078bcf28879" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/FastAPIProject.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/db.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FastAPI main" />
+        <option value="FastAPI test_main" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0000000000000377" />
+      <entry key="MS500" value="1.0020673523337404" />
+      <entry key="S2" value="1.21323286574957" />
+      <entry key="S5" value="1.5440634112112077" />
+      <entry key="S10" value="1.8765464029348196" />
+      <entry key="S30" value="3.2393818454153807" />
+      <entry key="S60" value="4.61390271883001" />
+      <entry key="M2" value="6.634181670114551" />
+      <entry key="M5" value="11.649819724275181" />
+      <entry key="M10" value="22.28165619430665" />
+      <entry key="M15" value="34.92431540979157" />
+      <entry key="M30" value="74.77109037783421" />
+      <entry key="H1" value="139.14995419803483" />
+      <entry key="H2" value="212.2796066283136" />
+      <entry key="H4" value="272.42056291104194" />
+      <entry key="D1" value="342.9249377779983" />
+      <entry key="W1" value="357.4905770389785" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="1.9172146390395446E-125" />
+      <entry key="S2" value="6.617684527458761E-32" />
+      <entry key="S5" value="3.4938005435877225E-13" />
+      <entry key="S10" value="7.430484598317384E-7" />
+      <entry key="S30" value="0.020127536367797252" />
+      <entry key="S60" value="0.3028497705112529" />
+      <entry key="M2" value="1.2263218745093691" />
+      <entry key="M5" value="3.355888057215235" />
+      <entry key="M10" value="6.353307711218929" />
+      <entry key="M15" value="9.18921483890731" />
+      <entry key="M30" value="16.49555619544806" />
+      <entry key="H1" value="26.977639686103075" />
+      <entry key="H2" value="38.74327655622823" />
+      <entry key="H4" value="48.53785252655824" />
+      <entry key="D1" value="60.16381030590238" />
+      <entry key="W1" value="62.58272096120782" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="6.733222297330647E-11" />
+      <entry key="MS500" value="0.010565951451662196" />
+      <entry key="S2" value="0.500883039170707" />
+      <entry key="S5" value="1.1457820429012722" />
+      <entry key="S10" value="1.6392159891384082" />
+      <entry key="S30" value="3.137426096357805" />
+      <entry key="S60" value="4.827532218975776" />
+      <entry key="M2" value="7.788541200293308" />
+      <entry key="M5" value="14.952706164081377" />
+      <entry key="M10" value="28.58731463120229" />
+      <entry key="M15" value="44.06614457502587" />
+      <entry key="M30" value="91.22153222615458" />
+      <entry key="H1" value="166.0904200681742" />
+      <entry key="H2" value="250.99676228047483" />
+      <entry key="H4" value="320.94238304461237" />
+      <entry key="D1" value="403.0855074751181" />
+      <entry key="W1" value="420.0728184316293" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3EVOcr4WA6Ku1bEWXmyob6ftw0m" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;FastAPI.FastAPIProject.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlite&quot;
+    ]
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="FastAPIProject" type="Python.FastAPI">
+      <option name="file" value="$PROJECT_DIR$/main.py" />
+      <module name="FastAPIProject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="false" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="RUN_TOOL" value="" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-c59985aa861c-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.24374.152" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fcf6402e-27f2-4230-b568-4078bcf28879" name="Changes" comment="" />
+      <created>1780260353054</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1780260353054</updated>
+      <workItem from="1780260354119" duration="2393000" />
+      <workItem from="1780328531095" duration="7696000" />
+      <workItem from="1780422062592" duration="3213000" />
+      <workItem from="1780863036452" duration="3160000" />
+      <workItem from="1782666611327" duration="601000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/FastAPIProject$FastAPIProject.coverage" NAME="FastAPIProject Coverage Results" MODIFIED="1780864492076" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+  </component>
+</project>
