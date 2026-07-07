@@ -98,3 +98,6 @@ API/database.db-journal
 API/.env
 frontend/.env
 frontend/.env*.local
+
+# MinIO data
+API/minio/data/
