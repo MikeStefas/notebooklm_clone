@@ -9,7 +9,7 @@ from app.core.dependencies import get_user_id
 from fastapi import Depends, HTTPException
 from sqlmodel import Session
 from fastapi import APIRouter
-from app.features.projects.schemas import PostProjectDTO, PostFileToProjectDTO
+from app.features.projects.schemas import PostProjectDTO, PostFileToProjectDTO, ProjectByIdResponse
 from app.features.projects.service import ProjectService
 
 router = APIRouter(
@@ -34,15 +34,14 @@ async def get_all_projects(
 ) -> list[ProjectModel]:
     return ProjectService.get_all_projects(session, user_id)
 
-@router.get("/{project_id}")
+@router.get("/{project_id}", response_model=ProjectByIdResponse)
 async def get_project_by_id(
     project_id: uuid.UUID,
     user_id: str = Depends(get_user_id),
     session: Session = Depends(get_session)
-) -> ProjectModel:
+) -> ProjectByIdResponse:
     project = ProjectService.get_project_by_id(session, user_id, project_id)
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+
     return project
 
 @router.post("/{project_id}/file")

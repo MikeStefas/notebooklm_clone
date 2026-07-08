@@ -23,6 +23,7 @@ export default function RootLayout({
                 display: "flex",
                 flexDirection: "column",
                 minHeight: "100vh",
+                bgcolor: "#0b0f19",
               }}
             >
               {children}
