@@ -1,11 +1,15 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { API_URL } from "@/app/shared/url";
-import { saveTokens } from "@/app/shared/cookies";
+import { API_URL } from "@/shared/url";
+import { saveTokens } from "@/shared/cookies";
 
 export const useSignIn = () => {
-  return useMutation({
+  const {
+    mutate: signInMutation,
+    error: signInError,
+    isPending: isSignInPending,
+  } = useMutation({
     mutationKey: ["sign-in"],
     mutationFn: async ({ email, password }: Record<string, string>) => {
       const params = new URLSearchParams();
@@ -24,7 +28,10 @@ export const useSignIn = () => {
       }
       const body = await response.json();
       await saveTokens(body.access_token, body.refresh_token);
+
       return body;
     },
   });
+
+  return { signInMutation, signInError, isSignInPending };
 };

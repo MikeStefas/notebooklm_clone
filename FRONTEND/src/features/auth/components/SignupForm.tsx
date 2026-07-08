@@ -1,26 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Stack, Typography, TextField, Button, Alert } from "@mui/material";
-import { useSignIn } from "../hooks/use-sign-in";
-import { getAccessToken, getRefreshToken } from "@/app/shared/cookies";
+import { useSignUp } from "../hooks/use-sign-up";
 
-export default function SigninForm() {
+export default function SignupForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { mutate, isPending, error, isSuccess } = useSignIn();
+  const { signUpMutation, signUpError, isSignUpPending, isSignUpSuccess } = useSignUp();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutate(
+    signUpMutation(
       { email, password },
       {
-        onSuccess: async () => {
-          const access = await getAccessToken();
-          const refresh = await getRefreshToken();
-          console.log("Access Token from cookies:", access);
-          console.log("Refresh Token from cookies:", refresh);
+        onSuccess: () => {
+          router.push("/notebook");
         },
       }
     );
@@ -34,18 +32,18 @@ export default function SigninForm() {
       sx={{ mt: 3, minWidth: "300px", textAlign: "center" }}
     >
       <Typography variant="h5" sx={{ fontWeight: "medium" }}>
-        Sign In
+        Sign Up
       </Typography>
 
-      {error && (
+      {signUpError && (
         <Alert severity="error">
-          {(error as Error).message || "Invalid email or password."}
+          {(signUpError as Error).message || "Failed to sign up."}
         </Alert>
       )}
 
-      {isSuccess && (
+      {isSignUpSuccess && (
         <Alert severity="success">
-          Signed in successfully! Check browser console for cookies.
+          Signed up successfully! You can now sign in.
         </Alert>
       )}
 
@@ -57,18 +55,18 @@ export default function SigninForm() {
         fullWidth
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        disabled={isPending || isSuccess}
+        disabled={isSignUpPending || isSignUpSuccess}
         required
       />
       <TextField
         label="Password"
         type="password"
-        autoComplete="current-password"
+        autoComplete="new-password"
         variant="standard"
         fullWidth
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        disabled={isPending || isSuccess}
+        disabled={isSignUpPending || isSignUpSuccess}
         required
       />
       <Button
@@ -76,9 +74,9 @@ export default function SigninForm() {
         variant="contained"
         fullWidth
         sx={{ mt: 1 }}
-        disabled={isPending || isSuccess}
+        disabled={isSignUpPending || isSignUpSuccess}
       >
-        {isPending ? "Signing In..." : "Sign In"}
+        {isSignUpPending ? "Signing Up..." : "Sign Up"}
       </Button>
     </Stack>
   );

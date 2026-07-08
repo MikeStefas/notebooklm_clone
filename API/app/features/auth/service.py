@@ -12,7 +12,7 @@ password_hash = PasswordHash.recommended()
 
 class AuthService:
     @staticmethod
-    def create_user(session: Session, payload: SignUpDTO) -> UserModel:
+    def sign_up(session: Session, payload: SignUpDTO) -> TokenResponse:
         hashed_password = password_hash.hash(payload.password)
         
         user = UserModel(email=payload.email, hashed_password=hashed_password)
@@ -24,9 +24,11 @@ class AuthService:
             raise HTTPException(status_code=400, detail="Email already exists")
         session.refresh(user)
         
-        user_dict = user.model_dump()
-        del user_dict['hashed_password']
-        return user_dict
+        token_payload = JWT(email=user.email, id=user.id)
+        access_token = create_access_token(token_payload)
+        refresh_token = create_refresh_token(token_payload)
+        
+        return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
     @staticmethod
     def sign_in(session: Session, payload: SignInDTO) -> TokenResponse:
