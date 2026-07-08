@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Optional
 from pydantic import BaseModel
 from pydantic import EmailStr
 from sqlmodel import SQLModel
@@ -12,6 +12,7 @@ class SignInDTO(SQLModel):
 class SignUpDTO(SQLModel):
     email: EmailStr
     password: str
+    username: str
 
 
 class TokenResponse(TypedDict):

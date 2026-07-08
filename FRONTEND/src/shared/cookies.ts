@@ -10,7 +10,7 @@ export async function clearTokens() {
   setCookie("refresh_token", "", { path: "/" });
 }
 
-export async function getAccessToken() {
+export function getAccessToken() {
   const token = getCookie("access_token");
   if (!token || token === "undefined" || token === "null") {
     return undefined;
@@ -18,7 +18,7 @@ export async function getAccessToken() {
   return token;
 }
 
-export async function getRefreshToken() {
+export function getRefreshToken() {
   const token = getCookie("refresh_token");
   if (!token || token === "undefined" || token === "null") {
     return undefined;

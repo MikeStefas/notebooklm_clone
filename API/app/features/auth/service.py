@@ -15,7 +15,8 @@ class AuthService:
     def sign_up(session: Session, payload: SignUpDTO) -> TokenResponse:
         hashed_password = password_hash.hash(payload.password)
         
-        user = UserModel(email=payload.email, hashed_password=hashed_password)
+        username = payload.username
+        user = UserModel(email=payload.email, hashed_password=hashed_password, username=username)
         session.add(user)
         try:
             session.commit()
@@ -24,7 +25,7 @@ class AuthService:
             raise HTTPException(status_code=400, detail="Email already exists")
         session.refresh(user)
         
-        token_payload = JWT(email=user.email, id=user.id)
+        token_payload = JWT(email=user.email, id=user.id, username=user.username)
         access_token = create_access_token(token_payload)
         refresh_token = create_refresh_token(token_payload)
         
@@ -45,7 +46,7 @@ class AuthService:
         if user.id is None:
             raise HTTPException(status_code=500, detail="User ID is missing")
 
-        token_payload = JWT(email=user.email, id=user.id)
+        token_payload = JWT(email=user.email, id=user.id, username=user.username)
         access_token = create_access_token(token_payload)
         refresh_token = create_refresh_token(token_payload)
         
@@ -62,7 +63,7 @@ class AuthService:
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
 
-        token_payload = JWT(email=user.email, id=user.id)
+        token_payload = JWT(email=user.email, id=user.id, username=user.username)
         access_token = create_access_token(token_payload)
         new_refresh_token = create_refresh_token(token_payload)
 

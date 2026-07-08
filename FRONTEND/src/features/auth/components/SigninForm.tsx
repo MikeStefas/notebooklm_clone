@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Stack, Typography, TextField, Button, Alert } from "@mui/material";
 import { useSignIn } from "../hooks/use-sign-in";
-import { getAccessToken, getRefreshToken } from "@/shared/cookies";
 
 export default function SigninForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,10 +18,7 @@ export default function SigninForm() {
       { email, password },
       {
         onSuccess: async () => {
-          const access = await getAccessToken();
-          const refresh = await getRefreshToken();
-          console.log("Access Token from cookies:", access);
-          console.log("Refresh Token from cookies:", refresh);
+          router.push("/projects");
         },
       }
     );

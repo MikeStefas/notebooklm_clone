@@ -1,7 +1,7 @@
 import SessionProvider from "@/shared/session-provider";
 import { Box } from "@mui/material";
 
-export default function NotebookLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -10,9 +10,10 @@ export default function NotebookLayout({
     <SessionProvider>
       <Box
         sx={{
+          p: 2,
           display: "flex",
           flexDirection: "column",
-          minHeight: "100vh",
+          height: "100vh",
         }}
       >
         {children}

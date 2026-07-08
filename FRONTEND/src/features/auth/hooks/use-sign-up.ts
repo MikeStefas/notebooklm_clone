@@ -13,16 +13,18 @@ export const useSignUp = () => {
     mutationFn: async ({
       email,
       password,
+      username,
     }: {
       email: string;
       password: string;
+      username: string;
     }) => {
       const response = await fetch(`${API_URL}/auth/sign_up/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, username }),
       });
       if (!response.ok) {
         throw new Error("Failed to sign up");

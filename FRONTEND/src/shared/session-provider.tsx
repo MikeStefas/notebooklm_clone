@@ -13,8 +13,8 @@ export default function SessionProvider({
   const [authorized, setAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const checkSession = async () => {
-      const tkn = await getAccessToken();
+    const checkSession = () => {
+      const tkn = getAccessToken();
 
       if (!tkn) {
         setAuthorized(false);

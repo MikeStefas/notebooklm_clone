@@ -7,6 +7,7 @@ import { useSignUp } from "../hooks/use-sign-up";
 
 export default function SignupForm() {
   const router = useRouter();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -15,10 +16,10 @@ export default function SignupForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     signUpMutation(
-      { email, password },
+      { email, password, username },
       {
         onSuccess: () => {
-          router.push("/notebook");
+          router.push("/projects");
         },
       }
     );
@@ -47,6 +48,17 @@ export default function SignupForm() {
         </Alert>
       )}
 
+      <TextField
+        label="Username"
+        type="text"
+        autoComplete="username"
+        variant="standard"
+        fullWidth
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        disabled={isSignUpPending || isSignUpSuccess}
+        required
+      />
       <TextField
         label="Email"
         type="email"

@@ -9,6 +9,7 @@ class User(SQLModel, table=True):
     id: uuid.UUID | None = Field(default_factory=uuid.uuid4, primary_key=True)
     email: EmailStr = Field(unique=True)
     hashed_password: str
+    username: str
     created_at: Optional[datetime] = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )

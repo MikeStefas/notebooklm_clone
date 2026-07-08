@@ -17,4 +17,4 @@ COPY --from=builder /app /app
 
 EXPOSE 8000
 
-CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--port", "8000", "--host", "0.0.0.0"]
+CMD ["/app/.venv/bin/fastapi", "dev", "app/main.py", "--port", "8000", "--host", "0.0.0.0"]
