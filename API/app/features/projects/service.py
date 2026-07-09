@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, UploadFile
 from app.core.db import Project as ProjectModel, File as FileModel
-from app.features.projects.schemas import PostProjectDTO, PostFileToProjectDTO, ProjectByIdResponse
+from app.features.projects.schemas import PostProjectDTO, PostFileToProjectDTO, GetAllProjectsResponse, GetProjectByIdResponse
 from app.core.minio_client import upload_to_minio, delete_from_minio
 
 
@@ -20,11 +20,11 @@ class ProjectService:
         return new_proj
 
     @staticmethod
-    def get_all_projects(session: Session, user_id: str | uuid.UUID) -> list[ProjectByIdResponse]:
+    def get_all_projects(session: Session, user_id: str | uuid.UUID) -> list[GetAllProjectsResponse]:
         projects = session.exec(select(ProjectModel).where(ProjectModel.user_id == user_id)).all()
         project_responses= []
         for project in projects:
-            project_responses.append(ProjectByIdResponse(
+            project_responses.append(GetAllProjectsResponse(
                 id=project.id,
                 user_id=project.user_id,
                 title=project.title,
@@ -35,20 +35,21 @@ class ProjectService:
         return project_responses
 
     @staticmethod
-    def get_project_by_id(session: Session, user_id: str | uuid.UUID, project_id: str | uuid.UUID) -> ProjectByIdResponse:
+    def get_project_by_id(session: Session, user_id: str | uuid.UUID, project_id: str | uuid.UUID) -> GetProjectByIdResponse:
         project = session.exec(select(ProjectModel).where(ProjectModel.user_id == user_id, ProjectModel.id == project_id)).first()
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
         
         file_count = len(project.files) if project.files else 0
         
-        return ProjectByIdResponse(
+        return GetProjectByIdResponse(
             id=project.id,
             user_id=project.user_id,
             title=project.title,
             created_at=project.created_at,
             updated_at=project.updated_at,
-            file_count=file_count
+            file_count=file_count,
+            files=project.files
         )
         
     

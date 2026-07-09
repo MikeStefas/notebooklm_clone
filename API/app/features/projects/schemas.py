@@ -10,10 +10,24 @@ class PostFileToProjectDTO(SQLModel):
     title: str
 
 
-class ProjectByIdResponse(SQLModel):
+from app.core.db import File as FileModel
+
+class GetAllProjectsResponse(SQLModel):
     id: uuid.UUID
     user_id: uuid.UUID
     title: str
     created_at: datetime
     updated_at: datetime
     file_count: int
+
+
+class GetProjectByIdResponse(SQLModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    title: str
+    created_at: datetime
+    updated_at: datetime
+    file_count: int
+    files: List[FileModel] = []
+
+
