@@ -2,14 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { Project } from "../types";
 
-interface ProjectCardProps {
-  project: Project;
-}
-interface ProjectCardProps {
-  project: Project;
-}
-
-export const ProjectCard = ({ project }: ProjectCardProps) => {
+export const ProjectCard = ({ project }: { project: Project }) => {
   const router = useRouter();
 
   return (

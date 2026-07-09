@@ -3,12 +3,13 @@ import { getAccessToken } from "@/shared/cookies";
 import { API_URL } from "@/shared/url";
 import { Project } from "../types";
 
-export const useGetProjects = () => {
+export const useGetProjectById = (projectId: string | null) => {
   const tkn = getAccessToken();
-  return useQuery<Project[]>({
-    queryKey: ["projects", tkn],
+
+  const { data, isError, error, isLoading } = useQuery<Project>({
+    queryKey: ["project", projectId, tkn],
     queryFn: async () => {
-      const res = await fetch(`${API_URL}/project`, {
+      const res = await fetch(`${API_URL}/project/${projectId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -17,11 +18,13 @@ export const useGetProjects = () => {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to fetch projects");
+        throw new Error("Failed to fetch project");
       }
 
       return res.json();
     },
-    enabled: !!tkn,
+    enabled: !!projectId && !!tkn,
   });
+
+  return { project: data, isError, error, isLoading };
 };

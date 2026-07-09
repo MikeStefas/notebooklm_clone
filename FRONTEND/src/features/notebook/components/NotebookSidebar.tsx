@@ -1,0 +1,34 @@
+import { Box, Typography, Button } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { Project } from "@/features/projects/types";
+import FileManager from "@/features/files/components/FileManager";
+
+interface NotebookSidebarProps {
+  project: Project;
+  projectId: string;
+}
+
+export default function NotebookSidebar({ project, projectId }: NotebookSidebarProps) {
+  const router = useRouter();
+
+  return (
+    <Box
+      sx={{
+        p: 2,
+        width: "15%",
+        borderRight: 1,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 0,
+      }}
+    >
+      <Button onClick={() => router.push("/projects")}>Back</Button>
+      <Typography variant="h4" sx={{ mt: 1 }}>
+        {project.title}
+      </Typography>
+      
+      <FileManager projectId={projectId} files={project.files} />
+    </Box>
+  );
+}
