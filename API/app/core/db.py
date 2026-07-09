@@ -3,7 +3,13 @@ import uuid
 from typing import List, Optional
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel, create_engine, Relationship, Session
+from pathlib import Path
+from enum import Enum
+from typing import Literal  
 
+class SenderType(Enum):
+    AI = "AI"
+    USER = "USER"
 
 class User(SQLModel, table=True):
     id: uuid.UUID | None = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -35,6 +41,7 @@ class Project(SQLModel, table=True):
     # relationships
     user: User = Relationship(back_populates="user_projects")
     files: Optional[List["File"]] = Relationship(back_populates="project")
+    messages: Optional[List["Message"]] = Relationship(back_populates="project")
 
 
 class File(SQLModel, table=True):
@@ -53,7 +60,19 @@ class File(SQLModel, table=True):
     project: Project = Relationship(back_populates="files")
 
 
-from pathlib import Path
+
+class Message(SQLModel, table=True):
+    id: uuid.UUID | None = Field(default_factory=uuid.uuid4, primary_key=True)
+    project_id: uuid.UUID | None = Field(default=None, foreign_key="project.id")
+    content: str
+    sender: SenderType
+    created_at: Optional[datetime] = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+    #relationships
+    project: Project = Relationship(back_populates="messages")
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 sqlite_file_path = BASE_DIR / "database.db"
