@@ -63,3 +63,13 @@ async def delete_file_from_project(
     session: Session = Depends(get_session),
 ) -> FileModel:
     return ProjectService.delete_file_from_project(session, user_id, project_id, file_id)
+
+@router.get("/{project_id}/file/{file_id}/presigned-url")
+async def get_file_presigned_url(
+    project_id: uuid.UUID,
+    file_id: uuid.UUID,
+    user_id: str = Depends(get_user_id),
+    session: Session = Depends(get_session),
+) -> dict:
+    url = ProjectService.get_file_presigned_url(session, user_id, project_id, file_id)
+    return {"url": url}

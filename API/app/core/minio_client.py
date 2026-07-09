@@ -30,21 +30,21 @@ def upload_to_minio(project_id, file_id, file, bucket_name):
         print(e)
         return False
 
-def download_from_minio(project_id, file_id, bucket_name):
-    prefix = f"{project_id}/{file_id}/"
+
+def create_presigned_url(bucket_name: str, object_name: str) -> str | None:
     try:
-        response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-        contents = response.get('Contents', [])
-        if not contents:
-            return None
-        key = contents[0]['Key']
-        
-        fileobj = io.BytesIO()
-        s3.download_fileobj(Bucket=bucket_name, Key=key, Fileobj=fileobj)
-        fileobj.seek(0)
-        return StreamingResponse(fileobj, media_type="application/octet-stream")
+        response = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': bucket_name,
+                'Key': object_name,
+                'ResponseContentType': 'application/pdf'
+            },
+            ExpiresIn=60,
+        )
+        return response
     except ClientError as e:
-        print(e)
+        print(f"Error generating presigned URL: {e}")
         return None
 
 def delete_from_minio(project_id, file_id, bucket_name):
