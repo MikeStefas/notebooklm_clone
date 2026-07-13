@@ -11,7 +11,7 @@ router = APIRouter(
     tags=["Files"],
 )
 
-@router.post("/upload", response_model=FilePresignedUploadResponse)
+@router.post("/presigned-url", response_model=FilePresignedUploadResponse)
 async def get_minio_put_url(
     project_id: uuid.UUID,
     file: UploadFile,
@@ -39,3 +39,11 @@ async def get_file_presigned_url(
     url = FileService.get_file_presigned_url(session, user_id, project_id, file_id)
     return PresignedUrlResponse(url=url)
 
+@router.post("/{file_id}/update-status")
+async def update_status(
+    project_id: uuid.UUID,
+    file_id: uuid.UUID,
+    user_id: str = Depends(get_user_id),
+    session: Session = Depends(get_session),
+)-> FileResponse:
+    return FileService.update_status(session, user_id, project_id, file_id)

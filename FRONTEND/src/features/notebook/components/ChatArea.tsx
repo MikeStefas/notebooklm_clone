@@ -21,7 +21,7 @@ export default function ChatArea({
   handleSendMessage,
 }: ChatAreaProps) {
   return (
-    <Stack sx={{ gap: 2, p: 2, width: "85%", height: "100%", minHeight: 0 }}>
+    <Stack sx={{ gap: 2, p: 2, width: "100%", height: "100%", minHeight: 0 }}>
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         {messages.map((message) => (
           <Box

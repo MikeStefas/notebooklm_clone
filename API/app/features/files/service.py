@@ -100,3 +100,24 @@ class FileService:
             raise HTTPException(status_code=500, detail="Failed to generate presigned URL")
             
         return presigned_url
+
+    @staticmethod
+    def update_status(session: Session,
+        user_id: str | uuid.UUID,
+        project_id: uuid.UUID,
+        file_id: uuid.UUID) -> FileModel:
+
+        project = session.exec(select(ProjectModel).where(ProjectModel.id == project_id, ProjectModel.user_id == user_id)).first()
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        selected_file = session.exec(select(FileModel).where(FileModel.id == file_id, FileModel.project_id == project_id)).first()
+        if not selected_file:
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        selected_file.status = "processed"
+        
+        session.add(selected_file)
+        session.commit()
+        session.refresh(selected_file)
+        return selected_file

@@ -6,9 +6,16 @@ import FileManager from "@/features/files/components/FileManager";
 interface NotebookSidebarProps {
   project: Project;
   projectId: string;
+  selectedFileId: string | null;
+  onSelectFile: (fileId: string | null) => void;
 }
 
-export default function NotebookSidebar({ project, projectId }: NotebookSidebarProps) {
+export default function NotebookSidebar({
+  project,
+  projectId,
+  selectedFileId,
+  onSelectFile,
+}: NotebookSidebarProps) {
   const router = useRouter();
 
   return (
@@ -27,8 +34,13 @@ export default function NotebookSidebar({ project, projectId }: NotebookSidebarP
       <Typography variant="h4" sx={{ mt: 1 }}>
         {project.title}
       </Typography>
-      
-      <FileManager projectId={projectId} files={project.files} />
+
+      <FileManager
+        projectId={projectId}
+        files={project.files}
+        selectedFileId={selectedFileId}
+        onSelectFile={onSelectFile}
+      />
     </Box>
   );
 }

@@ -49,6 +49,7 @@ class File(SQLModel, table=True):
     project_id: uuid.UUID | None = Field(default=None, foreign_key="project.id")
     name: str
     nextcloud_path: str
+    status: str = Field(default="pending")
     created_at: Optional[datetime] = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )

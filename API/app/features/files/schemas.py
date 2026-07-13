@@ -7,6 +7,7 @@ class FileResponse(SQLModel):
     project_id: uuid.UUID
     name: str
     nextcloud_path: str
+    status: str
     created_at: datetime
     updated_at: datetime
 

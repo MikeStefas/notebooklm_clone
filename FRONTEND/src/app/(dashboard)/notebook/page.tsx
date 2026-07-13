@@ -6,6 +6,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useGetProjectById } from "@/features/projects/hooks/use-get-project-by-id";
 import NotebookSidebar from "@/features/notebook/components/NotebookSidebar";
 import ChatArea from "@/features/notebook/components/ChatArea";
+import DocumentViewer from "@/features/files/components/DocumentViewer";
+import { Box } from "@mui/material";
 
 interface Message {
   id: string;
@@ -20,6 +22,7 @@ export default function NotebookPage() {
   const projectId = searchParams.get("projectId");
 
   const { project, isLoading, isError, error } = useGetProjectById(projectId!);
+  const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -92,13 +95,48 @@ export default function NotebookPage() {
 
   return (
     <Stack sx={{ flexDirection: "row", height: "100vh", overflow: "hidden" }}>
-      <NotebookSidebar project={project} projectId={projectId!} />
-      <ChatArea
-        messages={messages}
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        handleSendMessage={handleSendMessage}
+      <NotebookSidebar
+        project={project}
+        projectId={projectId!}
+        selectedFileId={selectedFileId}
+        onSelectFile={setSelectedFileId}
       />
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "row",
+          minWidth: 0,
+          height: "100%",
+        }}
+      >
+        <Box
+          sx={{
+            width: selectedFileId ? "50%" : "100%",
+            transition: "width 0.3s ease",
+            height: "100%",
+          }}
+        >
+          <ChatArea
+            messages={messages}
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            handleSendMessage={handleSendMessage}
+          />
+        </Box>
+
+        {selectedFileId && (
+          <DocumentViewer
+            projectId={projectId!}
+            fileId={selectedFileId}
+            fileName={
+              project.files?.find((f) => f.id === selectedFileId)?.name ||
+              "Document"
+            }
+            onClose={() => setSelectedFileId(null)}
+          />
+        )}
+      </Box>
     </Stack>
   );
 }
