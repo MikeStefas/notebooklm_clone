@@ -21,5 +21,11 @@
   },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "todo-tree.general.tags": [
+    "TODO",
+    "FIXME"
+  ],
+  "todo-tree.regex.regex": "(//|#|<!--)\\s*($TAGS):?",
+  "todo-tree.tree.showScanModeButton": true
 }

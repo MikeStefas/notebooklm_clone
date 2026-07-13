@@ -3,13 +3,14 @@ import uuid
 from sqlmodel import Session, select
 from fastapi import HTTPException, UploadFile
 from app.core.db import Project as ProjectModel, File as FileModel
-from app.core.minio_client import upload_to_minio, delete_from_minio, create_presigned_url
+from app.core.minio_client import upload_to_minio, delete_from_minio, create_presigned_get_url, create_presigned_post
+
 
 BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "file_storage")
 
 class FileService:
     @staticmethod
-    async def post_file_to_project(session: Session, user_id: str | uuid.UUID, project_id: uuid.UUID, file: UploadFile) -> FileModel:
+    async def get_minio_presigned_post(session: Session, user_id: str | uuid.UUID, project_id: uuid.UUID, file: UploadFile) -> dict:
         project = session.exec(select(ProjectModel).where(ProjectModel.id == project_id, ProjectModel.user_id == user_id)).first()
         
         if not project:
@@ -24,9 +25,11 @@ class FileService:
 
         session.add(new_file)
         
-        result = upload_to_minio(project_id, new_file.id, file, BUCKET_NAME)
+        key = f"{project_id}/{new_file.id}/{filename}"
+        content_type = file.content_type or "application/octet-stream"
+        post_data = create_presigned_post(BUCKET_NAME, key, content_type=content_type)
 
-        if result:
+        if post_data:
             try:
                 session.commit()
                 session.refresh(new_file)
@@ -38,7 +41,11 @@ class FileService:
             session.rollback()
             raise HTTPException(status_code=500, detail="Upload failed")
 
-        return new_file
+        return {
+            "file_created": new_file,
+            "url": post_data["url"],
+            "fields": post_data["fields"]
+        }
 
     @staticmethod
     def delete_file_from_project(
@@ -88,7 +95,7 @@ class FileService:
             raise HTTPException(status_code=404, detail="File not found")
             
         key = f"{project_id}/{file_id}/{selected_file.name}"
-        presigned_url = create_presigned_url(BUCKET_NAME, key)
+        presigned_url = create_presigned_get_url(BUCKET_NAME, key)
         if not presigned_url:
             raise HTTPException(status_code=500, detail="Failed to generate presigned URL")
             

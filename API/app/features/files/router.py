@@ -4,21 +4,21 @@ from sqlmodel import Session
 from app.core.db import get_session
 from app.core.dependencies import get_user_id
 from app.features.files.service import FileService
-from app.features.files.schemas import FileResponse, PresignedUrlResponse
+from app.features.files.schemas import FileResponse, PresignedUrlResponse, FilePresignedUploadResponse
 
 router = APIRouter(
     prefix="/project/{project_id}/file",
     tags=["Files"],
 )
 
-@router.post("/", response_model=FileResponse)
-async def post_file_to_project(
+@router.post("/upload", response_model=FilePresignedUploadResponse)
+async def get_minio_put_url(
     project_id: uuid.UUID,
     file: UploadFile,
     user_id: str = Depends(get_user_id),
     session: Session = Depends(get_session),
-) -> FileResponse:
-    return await FileService.post_file_to_project(session, user_id, project_id, file)
+) -> FilePresignedUploadResponse:
+    return await FileService.get_minio_presigned_post(session, user_id, project_id, file)
 
 @router.delete("/{file_id}", response_model=FileResponse)
 async def delete_file_from_project(

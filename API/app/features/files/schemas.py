@@ -12,3 +12,9 @@ class FileResponse(SQLModel):
 
 class PresignedUrlResponse(SQLModel):
     url: str
+
+class FilePresignedUploadResponse(SQLModel):
+    file_created: FileResponse
+    url: str
+    fields: dict[str, str]
+
