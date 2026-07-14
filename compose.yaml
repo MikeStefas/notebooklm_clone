@@ -32,18 +32,6 @@ services:
         - action: rebuild
           path: ./main-api/pyproject.toml
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - BACKEND_URL=${BACKEND_URL}
-    networks:
-      - notebooklm
-
   minio:
     image: quay.io/minio/minio
     container_name: minio

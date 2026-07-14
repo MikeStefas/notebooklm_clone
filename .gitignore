@@ -1,7 +1,13 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
 # database files
 database.db
 *.db
 *.sqlite3
+
 
 # ChromaDB data
 embeddings-api/chroma_data/

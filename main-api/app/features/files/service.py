@@ -4,6 +4,7 @@ from sqlmodel import Session, select
 from fastapi import HTTPException, UploadFile
 from app.core.db import Project as ProjectModel, File as FileModel
 from app.core.minio_client import upload_to_minio, delete_from_minio, create_presigned_get_url, create_presigned_post
+from app.core.embedding_api__requests import request_embed, EmbedFileDTO
 
 
 BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "file_storage")
@@ -102,12 +103,38 @@ class FileService:
         return presigned_url
 
     @staticmethod
-    def update_status(session: Session,
+    async def confirm_upload(session: Session,
         user_id: str | uuid.UUID,
         project_id: uuid.UUID,
         file_id: uuid.UUID) -> FileModel:
 
         project = session.exec(select(ProjectModel).where(ProjectModel.id == project_id, ProjectModel.user_id == user_id)).first()
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        selected_file = session.exec(select(FileModel).where(FileModel.id == file_id, FileModel.project_id == project_id)).first()
+        if not selected_file:
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        selected_file.status = "uploaded"
+        
+        session.add(selected_file)
+        try:
+            await request_embed(EmbedFileDTO(project_id=project_id, file_id=file_id, file_name=selected_file.name))
+            session.commit()
+            session.refresh(selected_file)
+        except Exception as e:
+            session.rollback()
+            raise HTTPException(status_code=500, detail="Failed to update file status")
+        
+        return selected_file
+    
+    @staticmethod
+    def confirm_process(session: Session,
+        project_id: uuid.UUID,
+        file_id: uuid.UUID) -> FileModel:
+
+        project = session.exec(select(ProjectModel).where(ProjectModel.id == project_id)).first()
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
         

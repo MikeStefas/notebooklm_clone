@@ -2,12 +2,14 @@ import os
 import uuid
 from typing import List, Any
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import chromadb
 from dotenv import load_dotenv
 from actions import get_chunks_from_s3_file
-from pydantic import BaseModel
+from schemas import EmbedFileDTO, DeleteEmbeddingsDTO, SearchDTO
+from background_task import embed_file_task
+
 load_dotenv()
 
 CHROMA_DATA_PATH = os.getenv("CHROMA_DATA_PATH", "./chroma_data")
@@ -25,42 +27,13 @@ app.add_middleware(
 def read_root():
     return {"msg": "Hello"}
 
-class EmbedFileDTO(BaseModel):
-    key: str
-    project_id: uuid.UUID
-    file_id: uuid.UUID
-
 @app.post("/embed")
-async def create_embeddings(payload: EmbedFileDTO):
-    chunks = get_chunks_from_s3_file(payload.key)
+async def create_embeddings(payload: EmbedFileDTO, background_tasks: BackgroundTasks):
+    background_tasks.add_task(embed_file_task, payload)
     
-    chroma_client = chromadb.PersistentClient(path=CHROMA_DATA_PATH)
-    try:
-        collection = chroma_client.get_or_create_collection(str(payload.project_id))
-    except:
-        raise HTTPException(status_code=404, detail="Collection failed to be created")
-    
-    if len(chunks) == 0 or not chunks:
-        raise HTTPException(status_code=400, detail="No chunks found")
-
-    for idx, chunk in enumerate(chunks):
-        collection.add(
-            ids=[f"{payload.key}_chunk_{idx}"],
-            documents=[chunk],
-            metadatas=[{
-                "project_id": str(payload.project_id),
-                "file_id": str(payload.file_id),
-                "filename": payload.key
-            }]
-        )
     return {
-        "status": "success",
-        "chunks_processed": len(chunks)
+        "status": "processing"
     }
-
-class DeleteEmbeddingsDTO(BaseModel):
-    project_id: uuid.UUID
-    file_id: uuid.UUID
 
 @app.post("/delete")
 async def delete_embeddings(payload: DeleteEmbeddingsDTO):
@@ -72,7 +45,6 @@ async def delete_embeddings(payload: DeleteEmbeddingsDTO):
     
     collection.delete(
         where={
-            
             "file_id": str(payload.file_id)
         }
     )
@@ -80,11 +52,6 @@ async def delete_embeddings(payload: DeleteEmbeddingsDTO):
     return {
         "status": "success"
     }
-
-class SearchDTO(BaseModel):
-    prompt: str
-    project_id: uuid.UUID
-    file_id: uuid.UUID
 
 @app.post("/search")
 async def query_embeddings(payload: SearchDTO):
