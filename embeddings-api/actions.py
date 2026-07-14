@@ -6,7 +6,6 @@ from fastapi import HTTPException
 from dotenv import load_dotenv
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# Load env variables from .env file
 load_dotenv()
 
 CHROMA_DATA_PATH = os.getenv("CHROMA_DATA_PATH", "./chroma_data")
@@ -36,5 +35,5 @@ def get_chunks_from_s3_file(key: str):
         if text:
             full_text += text + "\n"
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
     return text_splitter.split_text(full_text)

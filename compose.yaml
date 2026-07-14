@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: ./API
+      context: ./main-api
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
@@ -14,7 +14,7 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-password123}
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-file-storage}
     volumes:
-      - ./API:/app
+      - ./main-api:/app
       - /app/.venv
     networks:
       - notebooklm
@@ -23,14 +23,14 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./API
+          path: ./main-api
           target: /app
           ignore:
             - .venv/
             - __pycache__/
             - database.db
         - action: rebuild
-          path: ./API/pyproject.toml
+          path: ./main-api/pyproject.toml
 
   frontend:
     build:
@@ -54,7 +54,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-password123}
     volumes:
-      - ./API/minio/data:/data
+      - ./minio/data:/data
     networks:
       - notebooklm
     command: server /data --console-address ":9001"
