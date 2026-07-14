@@ -1,0 +1,17 @@
+[project]
+name = "embeddings-api"
+version = "0.1.0"
+description = "Dedicated microservice for text embeddings and ChromaDB operations"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.136.3",
+    "uvicorn>=0.48.0",
+    "chromadb>=0.5.0",
+    "sentence-transformers>=3.0.0",
+    "pydantic>=2.13.4",
+    "python-dotenv>=1.2.2",
+    "boto3>=1.43.47",
+    "pypdf>=6.14.2",
+    "langchain-text-splitters>=1.1.2",
+]
