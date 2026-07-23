@@ -19,7 +19,7 @@ export const useSignUp = () => {
       password: string;
       username: string;
     }) => {
-      const response = await fetch(`${API_URL}/auth/sign_up/`, {
+      const response = await fetch(`${API_URL}/auth/sign_up`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

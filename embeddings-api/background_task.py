@@ -10,22 +10,28 @@ load_dotenv()
 
 CHROMA_DATA_PATH = os.getenv("CHROMA_DATA_PATH", "./chroma_data")
 
-def embed_file_task(payload: EmbedFileDTO):
+def embed_file_task(payload: EmbedFileDTO, chroma_client):
+    backend_url = os.getenv("BACKEND_URL")
+    secret = os.getenv("INTERNAL_API_SECRET")
+    headers = {"secret_key": secret}
+
     try:
         key = f"{payload.project_id}/{payload.file_id}/{payload.file_name}"
         print(f"DEBUG: Starting embedding task for key: {key}")
         chunks = get_chunks_from_s3_file(key)
         print(f"DEBUG: Retrieved {len(chunks)} chunks")
-        
-        chroma_client = chromadb.PersistentClient(path=CHROMA_DATA_PATH)
         try:
             collection = chroma_client.get_or_create_collection(str(payload.project_id))
         except Exception as e:
             print(f"Collection failed to be created: {e}")
+            url = f"{backend_url}/project/{payload.project_id}/file/{payload.file_id}/fail-process"
+            httpx.post(url, headers=headers)
             return
         
         if len(chunks) == 0 or not chunks:
             print("No chunks found")
+            url = f"{backend_url}/project/{payload.project_id}/file/{payload.file_id}/fail-process"
+            httpx.post(url, headers=headers)
             return
 
         for idx, chunk in enumerate(chunks):
@@ -40,9 +46,6 @@ def embed_file_task(payload: EmbedFileDTO):
             )
         print("DEBUG: Successfully added embeddings to Chroma")
         
-        backend_url = os.getenv("BACKEND_URL")
-        secret = os.getenv("INTERNAL_API_SECRET")
-        headers = {"secret_key": secret}
         url = f"{backend_url}/project/{payload.project_id}/file/{payload.file_id}/confirm-process"
         
         print(f"DEBUG: Sending POST to: {url}")
@@ -52,3 +55,8 @@ def embed_file_task(payload: EmbedFileDTO):
         print(f"DEBUG EXCEPTION in embed_file_task: {e}")
         import traceback
         traceback.print_exc()
+        try:
+            url = f"{backend_url}/project/{payload.project_id}/file/{payload.file_id}/fail-process"
+            httpx.post(url, headers=headers)
+        except Exception as callback_err:
+            print(f"DEBUG: Failed to send failure callback: {callback_err}")

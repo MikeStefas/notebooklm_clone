@@ -1,11 +1,11 @@
 import uuid
 from typing import Literal, Annotated
-from fastapi import APIRouter, Depends, UploadFile, Header
+from fastapi import APIRouter, Depends, Header
 from sqlmodel import Session
 from app.core.db import get_session
 from app.core.dependencies import get_user_id, get_internal_secret
 from app.features.files.service import FileService
-from app.features.files.schemas import FileResponse, PresignedUrlResponse, FilePresignedUploadResponse
+from app.features.files.schemas import FileResponse, PresignedUrlResponse, FilePresignedUploadResponse, PresignedUrlRequest
 
 router = APIRouter(
     prefix="/project/{project_id}/file",
@@ -13,13 +13,13 @@ router = APIRouter(
 )
 
 @router.post("/presigned-url", response_model=FilePresignedUploadResponse)
-async def get_minio_put_url(
+async def get_minio_presigned_post(
     project_id: uuid.UUID,
-    file: UploadFile,
+    req: PresignedUrlRequest,
     user_id: str = Depends(get_user_id),
     session: Session = Depends(get_session),
 ) -> FilePresignedUploadResponse:
-    return await FileService.get_minio_presigned_post(session, user_id, project_id, file)
+    return await FileService.get_minio_presigned_post(session, user_id, project_id, req.filename, req.content_type)
 
 @router.delete("/{file_id}", response_model=FileResponse)
 async def delete_file_from_project(
@@ -28,7 +28,7 @@ async def delete_file_from_project(
     user_id: str = Depends(get_user_id),
     session: Session = Depends(get_session),
 ) -> FileResponse:
-    return FileService.delete_file_from_project(session, user_id, project_id, file_id)
+    return await FileService.delete_file_from_project(session, user_id, project_id, file_id)
 
 @router.get("/{file_id}/presigned-url", response_model=PresignedUrlResponse)
 async def get_file_presigned_url(
@@ -57,3 +57,12 @@ async def confirm_process(
     secret_key: str = Depends(get_internal_secret)
 ) -> FileResponse:
     return FileService.confirm_process(session, project_id, file_id)
+
+@router.post("/{file_id}/fail-process")
+async def fail_process(
+    project_id: uuid.UUID,
+    file_id: uuid.UUID,
+    session: Session = Depends(get_session),
+    secret_key: str = Depends(get_internal_secret)
+) -> FileResponse:
+    return FileService.fail_process(session, project_id, file_id)

@@ -30,4 +30,11 @@ class GetProjectByIdResponse(SQLModel):
     file_count: int
     files: List[FileModel] = []
 
+class PostProjectResponse(SQLModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    title: str
+    created_at: datetime
+    updated_at: datetime
+
 

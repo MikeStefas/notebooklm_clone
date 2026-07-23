@@ -7,7 +7,7 @@ from app.core.dependencies import get_user_id
 from fastapi import Depends, HTTPException
 from sqlmodel import Session
 from fastapi import APIRouter
-from app.features.projects.schemas import PostProjectDTO, GetAllProjectsResponse, GetProjectByIdResponse
+from app.features.projects.schemas import PostProjectDTO, GetAllProjectsResponse, GetProjectByIdResponse, PostProjectResponse
 from app.features.projects.service import ProjectService
 
 router = APIRouter(
@@ -16,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post("/", response_model=PostProjectResponse)
 async def post_project(
     payload: PostProjectDTO,
     user_id: str = Depends(get_user_id), 

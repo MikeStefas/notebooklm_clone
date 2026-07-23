@@ -2,12 +2,14 @@ from sqlmodel import SQLModel
 from datetime import datetime
 import uuid
 
+from app.core.db import FileStatus
+
 class FileResponse(SQLModel):
     id: uuid.UUID
     project_id: uuid.UUID
     name: str
     nextcloud_path: str
-    status: str
+    status: FileStatus
     created_at: datetime
     updated_at: datetime
 
@@ -18,4 +20,8 @@ class FilePresignedUploadResponse(SQLModel):
     file_created: FileResponse
     url: str
     fields: dict[str, str]
+
+class PresignedUrlRequest(SQLModel):
+    filename: str
+    content_type: str
 

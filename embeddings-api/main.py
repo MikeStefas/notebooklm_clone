@@ -2,7 +2,7 @@ import os
 import uuid
 from typing import List, Any
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
+from fastapi import FastAPI, HTTPException, Request, BackgroundTasks, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 import chromadb
 from dotenv import load_dotenv
@@ -14,7 +14,18 @@ load_dotenv()
 
 CHROMA_DATA_PATH = os.getenv("CHROMA_DATA_PATH", "./chroma_data")
 
-app = FastAPI()
+async def verify_internal_secret(secret_key: str = Header(default=None)):
+    expected_secret = os.getenv("INTERNAL_API_SECRET")
+    if not secret_key or secret_key != expected_secret:
+        raise HTTPException(status_code=403, detail="Unauthorized internal request")
+    return secret_key
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.chroma_client = chromadb.PersistentClient(path=CHROMA_DATA_PATH)
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,17 +38,17 @@ app.add_middleware(
 def read_root():
     return {"msg": "Hello"}
 
-@app.post("/embed")
-async def create_embeddings(payload: EmbedFileDTO, background_tasks: BackgroundTasks):
-    background_tasks.add_task(embed_file_task, payload)
+@app.post("/embed", dependencies=[Depends(verify_internal_secret)])
+async def create_embeddings(payload: EmbedFileDTO, request: Request, background_tasks: BackgroundTasks):
+    background_tasks.add_task(embed_file_task, payload, request.app.state.chroma_client)
     
     return {
         "status": "processing"
     }
 
-@app.post("/delete")
-async def delete_embeddings(payload: DeleteEmbeddingsDTO):
-    chroma_client = chromadb.PersistentClient(path=CHROMA_DATA_PATH)
+@app.post("/delete", dependencies=[Depends(verify_internal_secret)])
+async def delete_embeddings(payload: DeleteEmbeddingsDTO, request: Request):
+    chroma_client = request.app.state.chroma_client
     try:
         collection = chroma_client.get_collection(str(payload.project_id))
     except:
@@ -53,9 +64,9 @@ async def delete_embeddings(payload: DeleteEmbeddingsDTO):
         "status": "success"
     }
 
-@app.post("/search")
-async def query_embeddings(payload: SearchDTO):
-    chroma_client = chromadb.PersistentClient(path=CHROMA_DATA_PATH)
+@app.post("/search", dependencies=[Depends(verify_internal_secret)])
+async def query_embeddings(payload: SearchDTO, request: Request):
+    chroma_client = request.app.state.chroma_client
     try:
         collection = chroma_client.get_collection(str(payload.project_id))
     except:

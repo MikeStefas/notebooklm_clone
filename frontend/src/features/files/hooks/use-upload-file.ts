@@ -21,7 +21,7 @@ export const useUploadFile = (projectId: string) => {
       if (!successful) {
         throw new Error("Failed to upload file");
       }
-      await updateFileStatus(projectId, file_created.id, tkn);
+      await confirmUpload(projectId, file_created.id, tkn);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["project", projectId] });
@@ -32,17 +32,18 @@ export const useUploadFile = (projectId: string) => {
 };
 
 async function getPresignedURL(file: File, projectId: string, tkn: string) {
-  const formData = new FormData();
-  formData.append("file", file);
-
   const res = await fetch(
     `${API_URL}/project/${projectId}/file/presigned-url`,
     {
       method: "POST",
       headers: {
         Authorization: `Bearer ${tkn}`,
+        "Content-Type": "application/json",
       },
-      body: formData,
+      body: JSON.stringify({
+        filename: file.name,
+        content_type: file.type || "application/octet-stream",
+      }),
     }
   );
 
@@ -92,13 +93,13 @@ async function uploadToS3(
   return true;
 }
 
-async function updateFileStatus(
+async function confirmUpload(
   projectId: string,
   fileId: string,
   tkn: string
 ) {
   const res = await fetch(
-    `${API_URL}/project/${projectId}/file/${fileId}/update-status`,
+    `${API_URL}/project/${projectId}/file/${fileId}/confirm-upload`,
     {
       method: "POST",
       headers: {
@@ -108,7 +109,7 @@ async function updateFileStatus(
   );
 
   if (!res.ok) {
-    throw new Error("Failed to update file status");
+    throw new Error("Failed to confirm file upload");
   }
 
   return await res.json();

@@ -16,7 +16,7 @@ export const useSignIn = () => {
       params.append("username", email);
       params.append("password", password);
 
-      const response = await fetch(`${API_URL}/auth/sign_in/`, {
+      const response = await fetch(`${API_URL}/auth/sign_in`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
