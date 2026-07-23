@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from sqlmodel import Session, select
 from app.core.db import Message as MessageModel, Project as ProjectModel, SenderType
 from app.features.messages.schemas import PostUserMessageDTO
+from app.helpers.validate_db import validate_project_access, validate_project_exists, validate_message_access
 
 class MessageService:
     @staticmethod
@@ -11,15 +12,9 @@ class MessageService:
         user_id: str | uuid.UUID,
         project_id: uuid.UUID
     ) -> list[MessageModel]:
-        project = session.exec(
-            select(ProjectModel).where(ProjectModel.id == project_id, ProjectModel.user_id == user_id)
-        ).first()
-        if not project:
-            raise HTTPException(status_code=404, detail="Project not found")
+        validate_project_access(session, user_id, project_id)
 
-        all_messages = session.exec(
-            select(MessageModel).where(MessageModel.project_id == project_id)
-        ).all()
+        all_messages = validate_message_access(session, project_id)
         return all_messages
 
     @staticmethod
@@ -28,11 +23,7 @@ class MessageService:
         project_id: uuid.UUID,
         payload: PostUserMessageDTO
     ) -> MessageModel:
-        project = session.exec(
-            select(ProjectModel).where(ProjectModel.id == project_id)
-        ).first()
-        if not project:
-            raise HTTPException(status_code=404, detail="Project not found")
+        project = validate_project_exists(session, project_id)
         
         new_message = MessageModel(
             content=payload.content,
@@ -51,11 +42,7 @@ class MessageService:
         project_id: uuid.UUID,
         payload: PostUserMessageDTO
     ) -> MessageModel:
-        project = session.exec(
-            select(ProjectModel).where(ProjectModel.id == project_id, ProjectModel.user_id == user_id)
-        ).first()
-        if not project:
-            raise HTTPException(status_code=404, detail="Project not found")
+        project = validate_project_access(session, user_id, project_id)
         
         new_message = MessageModel(
             content=payload.content,

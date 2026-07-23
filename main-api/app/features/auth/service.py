@@ -33,6 +33,7 @@ class AuthService:
 
     @staticmethod
     def sign_in(session: Session, payload: SignInDTO) -> TokenResponse:
+        
         user = session.exec(select(UserModel).where(UserModel.email == payload.email)).first()
         
         if not user:

@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from fastapi import HTTPException
 from app.core.db import Project as ProjectModel
 from app.features.projects.schemas import PostProjectDTO, GetAllProjectsResponse, GetProjectByIdResponse
-
+from app.helpers.validate_db import validate_project_access
 
 class ProjectService:
     @staticmethod
@@ -31,11 +31,7 @@ class ProjectService:
 
     @staticmethod
     def get_project_by_id(session: Session, user_id: str | uuid.UUID, project_id: str | uuid.UUID) -> GetProjectByIdResponse:
-        project = session.exec(select(ProjectModel).where(ProjectModel.user_id == user_id, ProjectModel.id == project_id)).first()
-        if not project:
-            raise HTTPException(status_code=404, detail="Project not found")
-        
-        file_count = len(project.files) if project.files else 0
+        project = validate_project_access(session, user_id, project_id)
         
         return GetProjectByIdResponse(
             id=project.id,
@@ -43,6 +39,6 @@ class ProjectService:
             title=project.title,
             created_at=project.created_at,
             updated_at=project.updated_at,
-            file_count=file_count,
+            file_count=len(project.files) if project.files else 0,
             files=project.files
         )

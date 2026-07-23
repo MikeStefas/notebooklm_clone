@@ -74,13 +74,11 @@ async def query_embeddings(payload: SearchDTO, request: Request):
     
     results = collection.query(
         query_texts=[payload.prompt],
-        n_results=2,
+        n_results=5,
         where={"file_id": str(payload.file_id)}
     )
     if not results["ids"] or len(results["ids"][0]) == 0:
         raise HTTPException(status_code=404, detail="No embeddings found")
 
-    return {
-        "results": results
-    }
+    return results["documents"][0]
     

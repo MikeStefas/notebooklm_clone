@@ -35,5 +35,5 @@ def get_chunks_from_s3_file(key: str):
         if text:
             full_text += text + "\n"
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     return text_splitter.split_text(full_text)
