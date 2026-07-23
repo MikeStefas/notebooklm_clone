@@ -14,11 +14,11 @@ load_dotenv()
 
 CHROMA_DATA_PATH = os.getenv("CHROMA_DATA_PATH", "./chroma_data")
 
-async def verify_internal_secret(secret_key: str = Header(default=None)):
+async def verify_internal_secret(secret: str = Header(default=None, alias="secret")):
     expected_secret = os.getenv("INTERNAL_API_SECRET")
-    if not secret_key or secret_key != expected_secret:
+    if not secret or secret != expected_secret:
         raise HTTPException(status_code=403, detail="Unauthorized internal request")
-    return secret_key
+    return secret
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -77,7 +77,7 @@ async def query_embeddings(payload: SearchDTO, request: Request):
         n_results=2,
         where={"file_id": str(payload.file_id)}
     )
-    if results["embeddings"] is None or len(results["documents"]) == 0:
+    if not results["ids"] or len(results["ids"][0]) == 0:
         raise HTTPException(status_code=404, detail="No embeddings found")
 
     return {

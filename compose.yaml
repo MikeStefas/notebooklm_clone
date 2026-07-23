@@ -6,12 +6,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - SECRET_KEY=${SECRET_KEY:-supersecretkey12345!}
-      - REFRESH_SECRET_KEY=${REFRESH_SECRET_KEY:-superrefreshsecretkey12345!}
+      - secret=${secret:-supersecretkey12345!}
+      - REFRESH_secret=${REFRESH_secret:-superrefreshsecretkey12345!}
       - ALGORITHM=${ALGORITHM:-HS256}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT:-minio:9000}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-admin}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-password123}
+      - MINIO_secret=${MINIO_secret:-password123}
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-file-storage}
     volumes:
       - ./main-api:/app

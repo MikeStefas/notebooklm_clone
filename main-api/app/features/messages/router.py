@@ -26,7 +26,7 @@ async def post_ai_project_message(
     project_id: uuid.UUID,
     payload: PostUserMessageDTO,
     session: Session = Depends(get_session),
-    secret_key: str = Depends(get_internal_secret)
+    secret: str = Depends(get_internal_secret)
 ) -> MessageModel:
     return MessageService.post_ai_project_message(session, project_id, payload)
 

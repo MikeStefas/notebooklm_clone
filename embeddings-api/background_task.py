@@ -13,7 +13,7 @@ CHROMA_DATA_PATH = os.getenv("CHROMA_DATA_PATH", "./chroma_data")
 def embed_file_task(payload: EmbedFileDTO, chroma_client):
     backend_url = os.getenv("BACKEND_URL")
     secret = os.getenv("INTERNAL_API_SECRET")
-    headers = {"secret_key": secret}
+    headers = {"secret": secret}
 
     try:
         key = f"{payload.project_id}/{payload.file_id}/{payload.file_name}"

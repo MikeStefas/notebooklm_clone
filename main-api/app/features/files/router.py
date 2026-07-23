@@ -54,7 +54,7 @@ async def confirm_process(
     project_id: uuid.UUID,
     file_id: uuid.UUID,
     session: Session = Depends(get_session),
-    secret_key: str = Depends(get_internal_secret)
+    secret: str = Depends(get_internal_secret)
 ) -> FileResponse:
     return FileService.confirm_process(session, project_id, file_id)
 
@@ -63,6 +63,6 @@ async def fail_process(
     project_id: uuid.UUID,
     file_id: uuid.UUID,
     session: Session = Depends(get_session),
-    secret_key: str = Depends(get_internal_secret)
+    secret: str = Depends(get_internal_secret)
 ) -> FileResponse:
     return FileService.fail_process(session, project_id, file_id)
