@@ -14,4 +14,5 @@ dependencies = [
     "boto3>=1.43.47",
     "pypdf>=6.14.2",
     "langchain-text-splitters>=1.1.2",
+    "loguru>=0.7.3",
 ]

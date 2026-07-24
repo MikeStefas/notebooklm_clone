@@ -110,11 +110,13 @@ class FileService:
         try:
             await request_embed(EmbedFileDTO(project_id=project_id, file_id=file_id, file_name=selected_file.name))
         except Exception as e:
+            from loguru import logger
+            logger.exception(f"Error triggering embedding service: {e}")
             selected_file.status = FileStatus.FAILED
             session.add(selected_file)
             session.commit()
             session.refresh(selected_file)
-            raise HTTPException(status_code=500, detail="Failed to trigger embedding service")
+            raise HTTPException(status_code=500, detail=f"Failed to trigger embedding service: {str(e)}")
         
         return selected_file
     

@@ -24,6 +24,7 @@ export const useGetProjectById = (projectId: string | null) => {
       return res.json();
     },
     enabled: !!projectId && !!tkn,
+    refetchInterval: 5000,
   });
 
   return { project: data, isError, error, isLoading };

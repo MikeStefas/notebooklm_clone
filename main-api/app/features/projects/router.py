@@ -40,6 +40,4 @@ async def get_project_by_id(
     user_id: str = Depends(get_user_id),
     session: Session = Depends(get_session)
 ) -> GetProjectByIdResponse:
-    project = ProjectService.get_project_by_id(session, user_id, project_id)
-
-    return project
+    return ProjectService.get_project_by_id(session, user_id, project_id)
