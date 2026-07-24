@@ -1,5 +1,12 @@
-import { Box, Stack, Typography, TextField, Button } from "@mui/material";
-import { usePostMessage } from "../hooks/use-post-message";
+import {
+  Box,
+  Stack,
+  Typography,
+  TextField,
+  Button,
+  CircularProgress,
+} from "@mui/material";
+import { useHandleSendMessage } from "../hooks/use-pos";
 
 interface ChatAreaProps {
   projectId: string;
@@ -12,36 +19,44 @@ export default function ChatArea({
   projectId,
   setInputValue,
 }: ChatAreaProps) {
-  const { postMessage, isPostMessagePending } = usePostMessage(projectId);
-
-  const handleSendMessage = () => {
-    if (!inputValue.trim() || isPostMessagePending) return;
-
-    postMessage(inputValue, {
-      onSuccess: (data) => {
-        console.log(data);
-      },
-      onError: (err) => {
-        console.error("Embedding search failed:", err);
-      },
-    });
-
-    setInputValue("");
-  };
+  const {
+    handleSendMessage,
+    displayedMessages,
+    isGetAllMessagesLoading,
+    isGetAllMessagesError,
+    getAllMessagesError,
+    isPostMessagePending,
+  } = useHandleSendMessage({ projectId, inputValue, setInputValue });
 
   return (
     <Stack sx={{ gap: 2, p: 2, width: "100%", height: "100%", minHeight: 0 }}>
       <Box
         sx={{
           flexGrow: 1,
+          overflowY: "auto",
+          p: 2,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          p: 4,
-          textAlign: "center",
+          gap: 2,
         }}
-      ></Box>
+      >
+        {isGetAllMessagesLoading && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <CircularProgress size={24} />
+          </Box>
+        )}
+        {isGetAllMessagesError && (
+          <Typography color="error">
+            Error: {getAllMessagesError?.message}
+          </Typography>
+        )}
+
+        {displayedMessages.map((msg) => (
+          <Box key={msg.id}>
+            <Typography variant="body1">{msg.content}</Typography>
+          </Box>
+        ))}
+      </Box>
 
       <Stack sx={{ flexDirection: "row", gap: 2, alignItems: "center" }}>
         <TextField

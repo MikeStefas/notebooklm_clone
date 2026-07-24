@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Stack, Typography, Button, CircularProgress } from "@mui/material";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useGetProjectById } from "@/features/projects/hooks/use-get-project-by-id";
-import NotebookSidebar from "@/features/notebook/components/NotebookSidebar";
-import ChatArea from "@/features/notebook/components/ChatArea";
+import NotebookSidebar from "@/features/files/components/NotebookSidebar";
+import ChatArea from "@/features/messages/components/ChatArea";
 import DocumentViewer from "@/features/files/components/DocumentViewer";
 import { Box } from "@mui/material";
 
