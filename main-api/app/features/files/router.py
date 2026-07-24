@@ -61,6 +61,18 @@ async def confirm_upload(
     logger.info(f"Upload confirmed successfully for file {file_id} in project {project_id}")
     return res
 
+@router.post("/{file_id}/start-process")
+async def start_process(
+    project_id: uuid.UUID,
+    file_id: uuid.UUID,
+    session: Session = Depends(get_session),
+    secret: str = Depends(get_internal_secret)
+) -> FileResponse:
+    logger.info(f"Starting embedding process for file {file_id} in project {project_id}")
+    res = FileService.start_process(session, project_id, file_id)
+    logger.info(f"Embedding process started for file {file_id} in project {project_id}")
+    return res
+
 @router.post("/{file_id}/confirm-process")
 async def confirm_process(
     project_id: uuid.UUID,

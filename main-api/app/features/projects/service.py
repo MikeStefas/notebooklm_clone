@@ -37,10 +37,7 @@ class ProjectService:
     def get_project_by_id(session: Session, user_id: str | uuid.UUID, project_id: str | uuid.UUID) -> GetProjectByIdResponse:
         project = validate_project_access(session, user_id, project_id)
         
-        processed_files = []
-        for file in project.files:
-            if file.status == FileStatus.PROCESSED:
-                processed_files.append(file)
+        all_files = list(project.files) if project.files else []
         
         return GetProjectByIdResponse(
             id=project.id,
@@ -48,6 +45,6 @@ class ProjectService:
             title=project.title,
             created_at=project.created_at,
             updated_at=project.updated_at,
-            file_count=len(processed_files),
-            files=processed_files 
+            file_count=len(all_files),
+            files=all_files 
         )

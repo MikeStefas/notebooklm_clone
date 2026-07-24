@@ -62,7 +62,7 @@ export default function FileManager({
             type="file"
             hidden
             onChange={handleFileUpload}
-            accept=".txt,.pdf,.docx"
+            accept=".pdf"
           />
         </Button>
       </Box>
@@ -111,7 +111,7 @@ export default function FileManager({
               >
                 <ListItemText
                   primary={file.name}
-
+                  secondary={file.status}
                   sx={{ pr: 6 }}
                 />
               </Button>

@@ -15,29 +15,31 @@ class FileService:
         
         project = validate_project_access(session, user_id, project_id)
         
+        if not filename.lower().endswith(".pdf"):
+            raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+        
         new_file = FileModel(
             name=filename,
             project_id=project_id,
             nextcloud_path=f"/projects/{project_id}/{filename}"
         )
 
-        session.add(new_file)
-        
         key = f"{project_id}/{new_file.id}/{filename}"
         content_type = content_type or "application/octet-stream"
+        # HTTP call to MinIO BEFORE touching the session
         post_data = create_presigned_post(BUCKET_NAME, key, content_type=content_type)
 
-        if post_data:
-            try:
-                session.commit()
-                session.refresh(new_file)
-            except Exception as e:
-                session.rollback()
-                delete_from_minio(project_id, new_file.id, BUCKET_NAME)
-                raise HTTPException(status_code=500, detail="Failed to write to db")
-        else:
-            session.rollback()
+        if not post_data:
             raise HTTPException(status_code=500, detail="Upload failed")
+
+        try:
+            session.add(new_file)
+            session.commit()
+            session.refresh(new_file)
+        except Exception as e:
+            session.rollback()
+            delete_from_minio(project_id, new_file.id, BUCKET_NAME)
+            raise HTTPException(status_code=500, detail="Failed to write to db")
 
         return {
             "file_created": new_file,
@@ -56,23 +58,21 @@ class FileService:
         project = validate_project_access(session, user_id, project_id)
         
         selected_file = validate_file_access(session, project_id, file_id)
-            
-        delete_success = delete_from_minio(project_id, file_id, BUCKET_NAME)
-        
-        if not delete_success:
-            session.rollback()
-            raise HTTPException(status_code=500, detail="Delete from minio failed")
+        file_snapshot = selected_file
 
+        # Finish all DB work first
         try:
-            await request_delete(DeleteEmbeddingsDTO(project_id=project_id, file_id=file_id))
-
             session.delete(selected_file)
             session.commit()
         except Exception as e:
             session.rollback()
             raise HTTPException(status_code=500, detail="Failed to delete file from database")
 
-        return selected_file
+        # HTTP calls after session is clean
+        delete_from_minio(project_id, file_id, BUCKET_NAME)
+        await request_delete(DeleteEmbeddingsDTO(project_id=project_id, file_id=file_id))
+
+        return file_snapshot
 
     @staticmethod
     def get_file_presigned_url(
@@ -102,13 +102,15 @@ class FileService:
         
         selected_file = validate_file_access(session, project_id, file_id)
         
-        selected_file.status = FileStatus.UPLOADED
-        session.commit()
-        
+        selected_file.status = FileStatus.PROCESSING
         session.add(selected_file)
+        session.commit()
         session.refresh(selected_file)
+        file_name = selected_file.name
+
+        # HTTP call after all DB work is done
         try:
-            await request_embed(EmbedFileDTO(project_id=project_id, file_id=file_id, file_name=selected_file.name))
+            await request_embed(EmbedFileDTO(project_id=project_id, file_id=file_id, file_name=file_name))
         except Exception as e:
             from loguru import logger
             logger.exception(f"Error triggering embedding service: {e}")
@@ -119,7 +121,23 @@ class FileService:
             raise HTTPException(status_code=500, detail=f"Failed to trigger embedding service: {str(e)}")
         
         return selected_file
-    
+
+    @staticmethod
+    def start_process(session: Session,
+        project_id: uuid.UUID,
+        file_id: uuid.UUID) -> FileModel:
+
+        project = validate_project_exists(session, project_id)
+        
+        selected_file = validate_file_access(session, project_id, file_id)
+        
+        selected_file.status = FileStatus.PROCESSING
+        
+        session.add(selected_file)
+        session.commit()
+        session.refresh(selected_file)
+        return selected_file
+
     @staticmethod
     def confirm_process(session: Session,
         project_id: uuid.UUID,
