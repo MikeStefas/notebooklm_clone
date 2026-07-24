@@ -2,15 +2,16 @@ from sqlmodel import SQLModel
 from datetime import datetime
 import uuid
 from typing import Optional, List
+from app.core.db import File as FileModel
 
 class PostProjectDTO(SQLModel):
-    title : str
+    title: str
+    filename: Optional[str] = None
+    content_type: Optional[str] = None
 
 class PostFileToProjectDTO(SQLModel):
     title: str
 
-
-from app.core.db import File as FileModel
 
 class GetAllProjectsResponse(SQLModel):
     id: uuid.UUID
@@ -18,7 +19,7 @@ class GetAllProjectsResponse(SQLModel):
     title: str
     created_at: datetime
     updated_at: datetime
-    file_count: int
+    file: Optional[FileModel] = None
 
 
 class GetProjectByIdResponse(SQLModel):
@@ -27,8 +28,15 @@ class GetProjectByIdResponse(SQLModel):
     title: str
     created_at: datetime
     updated_at: datetime
-    file_count: int
-    files: List[FileModel] = []
+    file: Optional[FileModel] = None
+
+class GetProjectResponse(SQLModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    title: str
+    created_at: datetime
+    updated_at: datetime
+    file: Optional[FileModel] = None
 
 class PostProjectResponse(SQLModel):
     id: uuid.UUID
@@ -36,5 +44,8 @@ class PostProjectResponse(SQLModel):
     title: str
     created_at: datetime
     updated_at: datetime
+    file: Optional[FileModel] = None
+    upload_url: Optional[str] = None
+    fields: Optional[dict] = None
 
 

@@ -15,6 +15,15 @@ class FileService:
         
         project = validate_project_access(session, user_id, project_id)
         
+        if project.file:
+            try:
+                delete_from_minio(project_id, project.file.id, BUCKET_NAME)
+                await request_delete(DeleteEmbeddingsDTO(project_id=project_id, file_id=project.file.id))
+            except Exception:
+                pass
+            session.delete(project.file)
+            session.commit()
+
         new_file = FileModel(
             name=filename,
             project_id=project_id,

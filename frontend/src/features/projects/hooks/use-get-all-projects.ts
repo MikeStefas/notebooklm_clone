@@ -9,7 +9,7 @@ export const useGetAllProjects = () => {
   const { data, isError, error, isLoading, isSuccess } = useQuery<Project[]>({
     queryKey: ["all_projects", tkn],
     queryFn: async () => {
-      const res = await fetch(`${API_URL}/project`, {
+      const res = await fetch(`${API_URL}/project/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

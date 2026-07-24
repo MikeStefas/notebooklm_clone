@@ -42,9 +42,9 @@ async def request_delete(payload: DeleteEmbeddingsDTO):
     api_url, secret = get_config()
     async with httpx.AsyncClient() as client:
         response = await client.post(f"{api_url}/delete", json=payload.model_dump(mode="json"), headers={"secret": secret})
-        if response.status_code != 200:
+        if response.status_code not in (200, 404):
             raise HTTPException(status_code=response.status_code, detail="External embeddings api request failed")
-        return response.json()
+        return response.json() if response.status_code == 200 else {"status": "not_found"}
 
 async def request_search(payload: SearchDTO):
     api_url, secret = get_config()

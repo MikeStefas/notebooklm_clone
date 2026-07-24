@@ -12,14 +12,38 @@ export const ProjectCard = ({ project }: { project: Project }) => {
         border: "1px solid #ccc",
         borderRadius: "8px",
         p: 2,
-        height: "100px",
         cursor: "pointer",
+        transition: "all 0.2s ease-in-out",
         "&:hover": {
-          bgcolor: "rgba(255, 255, 255, 0.05)",
+          bgcolor: "action.hover",
+          borderColor: "primary.main",
         },
       }}
     >
-      <Typography variant="h6">{project.title}</Typography>
+      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+        {project.title}
+      </Typography>
+
+      {project.file ? (
+        <Box sx={{ mt: 1, display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            noWrap
+            sx={{ maxWidth: "200px" }}
+          >
+            File: {project.file.name}
+          </Typography>
+        </Box>
+      ) : (
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mt: 1, display: "block" }}
+        >
+          No file attached
+        </Typography>
+      )}
     </Box>
   );
 };

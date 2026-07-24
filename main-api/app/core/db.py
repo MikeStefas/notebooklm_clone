@@ -47,13 +47,13 @@ class Project(SQLModel, table=True):
     )
     # relationships
     user: User = Relationship(back_populates="user_projects")
-    files: Optional[List["File"]] = Relationship(back_populates="project")
+    file: Optional["File"] = Relationship(back_populates="project", sa_relationship_kwargs={"uselist": False})
     messages: Optional[List["Message"]] = Relationship(back_populates="project")
 
 
 class File(SQLModel, table=True):
     id: uuid.UUID | None = Field(default_factory=uuid.uuid4, primary_key=True)
-    project_id: uuid.UUID | None = Field(default=None, foreign_key="project.id")
+    project_id: uuid.UUID | None = Field(default=None, foreign_key="project.id", unique=True)
     name: str
     nextcloud_path: str
     status: FileStatus = Field(default=FileStatus.PENDING)
@@ -65,7 +65,7 @@ class File(SQLModel, table=True):
         sa_column_kwargs={"onupdate": lambda: datetime.now(timezone.utc)},
     )
     # relationships
-    project: Project = Relationship(back_populates="files")
+    project: Project = Relationship(back_populates="file")
 
 
 

@@ -16,10 +16,10 @@ export const useUploadFile = (projectId: string) => {
         file,
         projectId,
         tkn
-      ); //get post url
-      const successful = await uploadToS3(upload_url, fields, file); //upload to s3 through url
+      );
+      const successful = await uploadToS3(upload_url, fields, file);
       if (!successful) {
-        throw new Error("Failed to upload file");
+        throw new Error("Failed to upload file to storage server");
       }
       await confirmUpload(projectId, file_created.id, tkn);
     },
@@ -32,23 +32,30 @@ export const useUploadFile = (projectId: string) => {
 };
 
 async function getPresignedURL(file: File, projectId: string, tkn: string) {
-  const res = await fetch(
-    `${API_URL}/project/${projectId}/file/presigned-url`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${tkn}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        filename: file.name,
-        content_type: file.type || "application/octet-stream",
-      }),
-    }
-  );
+  let res: Response;
+  try {
+    res = await fetch(
+      `${API_URL}/project/${projectId}/file/presigned-url`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${tkn}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: file.name,
+          content_type: file.type || "application/octet-stream",
+        }),
+      }
+    );
+  } catch (err: any) {
+    console.error("Presigned URL network error:", err);
+    throw new Error(`Failed to request presigned URL (${err?.message || "Network Error"})`);
+  }
 
   if (!res.ok) {
-    throw new Error("Failed to upload file");
+    const text = await res.text().catch(() => "");
+    throw new Error(`Failed to get presigned upload URL (HTTP ${res.status}: ${text})`);
   }
 
   const data = await res.json();
@@ -56,7 +63,7 @@ async function getPresignedURL(file: File, projectId: string, tkn: string) {
   const fields = data.fields;
 
   if (!upload_url || !fields) {
-    throw new Error("Failed to get presigned POST details");
+    throw new Error("Invalid presigned POST details returned");
   }
 
   return { upload_url, fields, file_created: data.file_created };
@@ -67,13 +74,9 @@ async function uploadToS3(
   fields: Record<string, string>,
   file: File
 ) {
-  // TODO: REMOVE THIS WHEN FINISH DOCKER
-  if (upload_url.includes("http://minio:9000")) {
-    upload_url = upload_url.replace(
-      "http://minio:9000",
-      "http://localhost:9000"
-    );
-  }
+  let finalUrl = upload_url
+    .replace("http://minio:9000", "http://localhost:9000")
+    .replace("http://127.0.0.1:9000", "http://localhost:9000");
 
   const s3FormData = new FormData();
   for (const key in fields) {
@@ -81,13 +84,20 @@ async function uploadToS3(
   }
   s3FormData.append("file", file);
 
-  const uploadRes = await fetch(upload_url, {
-    method: "POST",
-    body: s3FormData,
-  });
+  let uploadRes: Response;
+  try {
+    uploadRes = await fetch(finalUrl, {
+      method: "POST",
+      body: s3FormData,
+    });
+  } catch (err: any) {
+    console.error("S3 upload network error:", err);
+    throw new Error(`Failed to connect to file storage server (${err?.message || "Network Error"})`);
+  }
 
   if (!uploadRes.ok) {
-    throw new Error("Failed to upload file");
+    const s3Err = await uploadRes.text().catch(() => "");
+    throw new Error(`File storage rejected upload (HTTP ${uploadRes.status}: ${s3Err})`);
   }
 
   return true;
@@ -98,18 +108,24 @@ async function confirmUpload(
   fileId: string,
   tkn: string
 ) {
-  const res = await fetch(
-    `${API_URL}/project/${projectId}/file/${fileId}/confirm-upload`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${tkn}`,
-      },
-    }
-  );
+  let res: Response;
+  try {
+    res = await fetch(
+      `${API_URL}/project/${projectId}/file/${fileId}/confirm-upload`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${tkn}`,
+        },
+      }
+    );
+  } catch (err: any) {
+    console.error("Confirm upload network error:", err);
+    throw new Error(`Failed to connect to backend for confirm upload (${err?.message})`);
+  }
 
   if (!res.ok) {
-    throw new Error("Failed to confirm file upload");
+    throw new Error(`Failed to confirm file upload (HTTP ${res.status})`);
   }
 
   return await res.json();

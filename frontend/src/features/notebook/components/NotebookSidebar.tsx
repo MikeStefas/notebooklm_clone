@@ -37,7 +37,7 @@ export default function NotebookSidebar({
 
       <FileManager
         projectId={projectId}
-        files={project.files}
+        file={project.file}
         selectedFileId={selectedFileId}
         onSelectFile={onSelectFile}
       />

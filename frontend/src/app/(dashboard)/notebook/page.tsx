@@ -130,8 +130,9 @@ export default function NotebookPage() {
             projectId={projectId!}
             fileId={selectedFileId}
             fileName={
-              project.files?.find((f) => f.id === selectedFileId)?.name ||
-              "Document"
+              project.file?.id === selectedFileId
+                ? project.file.name
+                : "Document"
             }
             onClose={() => setSelectedFileId(null)}
           />

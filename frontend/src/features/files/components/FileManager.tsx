@@ -1,126 +1,70 @@
-import {
-  Box,
-  Typography,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useUploadFile } from "@/features/files/hooks/use-upload-file";
 import { useDeleteFile } from "@/features/files/hooks/use-delete-file";
-import { Project } from "@/features/projects/types";
+import { ProjectFile } from "@/features/projects/types";
 
 interface FileManagerProps {
   projectId: string;
-  files?: Project["files"];
+  file?: ProjectFile | null;
   selectedFileId?: string | null;
   onSelectFile?: (fileId: string | null) => void;
 }
 
 export default function FileManager({
   projectId,
-  files,
+  file,
   selectedFileId,
   onSelectFile,
 }: FileManagerProps) {
   const { uploadFile, isPending: uploading } = useUploadFile(projectId);
   const { deleteFile, isPending: deleting } = useDeleteFile(projectId);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    uploadFile(file, {
-      onSuccess: () => {
-        alert("success");
-      },
-      onError: (err) => {
-        alert("Upload failed: " + err.message);
-      },
-    });
-  };
-
-  const handleFileDelete = (fileId: string) => {
-    deleteFile(fileId, {
-      onSuccess: () => {
-        alert("success");
-      },
-      onError: (err) => {
-        alert("Delete failed: " + err.message);
-      },
-    });
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) uploadFile(selected);
   };
 
   return (
-    <>
-      <Typography variant="h6">Sources</Typography>
+    <Box>
+      <Typography variant="h6">Project Source</Typography>
 
-      <Box sx={{ my: 2 }}>
-        <Button component="label" variant="contained" disabled={uploading}>
-          {uploading ? "Uploading..." : "Add file"}
-          <input
-            type="file"
-            hidden
-            onChange={handleFileUpload}
-            accept=".txt,.pdf,.docx"
-          />
-        </Button>
-      </Box>
+      {file ? (
+        <Box sx={{ mt: 1 }}>
+          <Typography
+            variant="body2"
+            onClick={() => onSelectFile?.(selectedFileId === file.id ? null : file.id)}
+            sx={{ cursor: "pointer", fontWeight: selectedFileId === file.id ? 700 : 400 }}
+          >
+            {file.name} ({file.status})
+          </Typography>
 
-      <List sx={{ flexGrow: 1, overflowY: "auto" }}>
-        {files && files.length > 0 ? (
-          files.map((file) => (
-            <ListItem
-              key={file.id}
-              secondaryAction={
-                <Button
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleFileDelete(file.id);
-                  }}
-                  disabled={deleting}
-                  color="error"
-                >
-                  Delete
-                </Button>
-              }
-              disablePadding
+          <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+            <Button component="label" size="small" variant="outlined" disabled={uploading || deleting}>
+              {uploading ? "Replacing..." : "Replace"}
+              <input type="file" hidden onChange={handleUpload} accept=".txt,.pdf,.docx" />
+            </Button>
+
+            <Button
+              size="small"
+              color="error"
+              disabled={uploading || deleting}
+              onClick={() => {
+                deleteFile(file.id, { onSuccess: () => onSelectFile?.(null) });
+              }}
             >
-              <Button
-                onClick={() =>
-                  onSelectFile?.(selectedFileId === file.id ? null : file.id)
-                }
-                sx={{
-                  width: "100%",
-                  textAlign: "left",
-                  justifyContent: "flex-start",
-                  textTransform: "none",
-                  color: "text.primary",
-                  py: 1,
-                  px: 1.5,
-                  borderRadius: 1,
-                  bgcolor:
-                    selectedFileId === file.id
-                      ? "action.selected"
-                      : "transparent",
-                  "&:hover": {
-                    bgcolor: "action.hover",
-                  },
-                }}
-              >
-                <ListItemText
-                  primary={file.name}
-
-                  sx={{ pr: 6 }}
-                />
-              </Button>
-            </ListItem>
-          ))
-        ) : (
-          <Typography>No sources uploaded yet.</Typography>
-        )}
-      </List>
-    </>
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </Box>
+        </Box>
+      ) : (
+        <Box sx={{ mt: 1 }}>
+          <Typography variant="body2" color="text.secondary">No file attached.</Typography>
+          <Button component="label" size="small" variant="contained" sx={{ mt: 1 }} disabled={uploading}>
+            {uploading ? "Uploading..." : "Upload File"}
+            <input type="file" hidden onChange={handleUpload} accept=".txt,.pdf,.docx" />
+          </Button>
+        </Box>
+      )}
+    </Box>
   );
 }
