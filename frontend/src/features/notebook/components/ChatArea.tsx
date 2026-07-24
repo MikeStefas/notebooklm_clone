@@ -1,45 +1,52 @@
 import { Box, Stack, Typography, TextField, Button } from "@mui/material";
-
-interface Message {
-  id: string;
-  sender: "user" | "assistant";
-  text: string;
-  timestamp: Date;
-}
+import { usePostMessage } from "../hooks/use-post-message";
 
 interface ChatAreaProps {
-  messages: Message[];
+  projectId: string;
   inputValue: string;
   setInputValue: (val: string) => void;
-  handleSendMessage: () => void;
 }
 
 export default function ChatArea({
-  messages,
   inputValue,
+  projectId,
   setInputValue,
-  handleSendMessage,
 }: ChatAreaProps) {
+  const { postMessage, isPostMessagePending } = usePostMessage(projectId);
+
+  const handleSendMessage = () => {
+    if (!inputValue.trim() || isPostMessagePending) return;
+
+    postMessage(inputValue, {
+      onSuccess: (data) => {
+        console.log(data);
+      },
+      onError: (err) => {
+        console.error("Embedding search failed:", err);
+      },
+    });
+
+    setInputValue("");
+  };
+
   return (
     <Stack sx={{ gap: 2, p: 2, width: "100%", height: "100%", minHeight: 0 }}>
-      <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
-        {messages.map((message) => (
-          <Box
-            key={message.id}
-            sx={{
-              my: 2,
-              textAlign: message.sender === "user" ? "right" : "left",
-            }}
-          >
-            <Typography variant="body1">{message.text}</Typography>
-          </Box>
-        ))}
-      </Box>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          p: 4,
+          textAlign: "center",
+        }}
+      ></Box>
 
       <Stack sx={{ flexDirection: "row", gap: 2, alignItems: "center" }}>
         <TextField
           fullWidth
-          placeholder="Ask a question about your documents..."
+          placeholder="Ask a question to search embeddings..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => {
@@ -47,13 +54,14 @@ export default function ChatArea({
               handleSendMessage();
             }
           }}
+          disabled={isPostMessagePending}
         />
         <Button
           variant="contained"
           onClick={handleSendMessage}
-          disabled={!inputValue.trim()}
+          disabled={!inputValue.trim() || isPostMessagePending}
         >
-          Send
+          {isPostMessagePending ? "Searching..." : "Search"}
         </Button>
       </Stack>
     </Stack>

@@ -15,4 +15,5 @@ dependencies = [
     "pypdf>=6.14.2",
     "langchain-text-splitters>=1.1.2",
     "loguru>=0.7.3",
+    "google-genai>=2.14.0",
 ]

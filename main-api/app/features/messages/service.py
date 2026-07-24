@@ -4,6 +4,9 @@ from sqlmodel import Session, select
 from app.core.db import Message as MessageModel, Project as ProjectModel, SenderType
 from app.features.messages.schemas import PostUserMessageDTO
 from app.helpers.validate_db import validate_project_access, validate_project_exists, validate_message_access
+from app.core.embedding_api__requests import SearchDTO, request_search
+
+from loguru import logger
 
 class MessageService:
     @staticmethod
@@ -36,14 +39,14 @@ class MessageService:
         return new_message
 
     @staticmethod
-    def post_user_project_message(
+    async def post_user_project_message(
         session: Session,
         user_id: str | uuid.UUID,
         project_id: uuid.UUID,
         payload: PostUserMessageDTO
-    ) -> MessageModel:
+    ) -> list[str]:
         project = validate_project_access(session, user_id, project_id)
-        
+
         new_message = MessageModel(
             content=payload.content,
             sender=SenderType.USER,
@@ -52,4 +55,14 @@ class MessageService:
         session.add(new_message)
         session.commit()
         session.refresh(new_message)
-        return new_message
+
+        search_payload = SearchDTO(
+            prompt=payload.content,
+            project_id=project_id,
+        )
+        search_result = await request_search(search_payload)
+        
+        logger.info(f"EMBEDDING SEARCH RESULT: {search_result}")
+        print(f"\n--- EMBEDDING SEARCH RESULT FOR PROJECT {project_id} ---\n{search_result}\n----------------------------------------------------\n", flush=True)
+
+        return search_result

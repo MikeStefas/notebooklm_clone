@@ -30,11 +30,11 @@ async def post_ai_project_message(
 ) -> MessageModel:
     return MessageService.post_ai_project_message(session, project_id, payload)
 
-@router.post("/user", response_model=MessageResponse)
+@router.post("/user", response_model=list[str])
 async def post_user_project_message(
     project_id: uuid.UUID,
     payload: PostUserMessageDTO,
     user_id: str = Depends(get_user_id),
     session: Session = Depends(get_session),
-) -> MessageModel:
-    return MessageService.post_user_project_message(session, user_id, project_id, payload)
+) -> list[str]:
+    return await MessageService.post_user_project_message(session, user_id, project_id, payload)

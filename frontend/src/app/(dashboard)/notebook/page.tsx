@@ -9,13 +9,6 @@ import ChatArea from "@/features/notebook/components/ChatArea";
 import DocumentViewer from "@/features/files/components/DocumentViewer";
 import { Box } from "@mui/material";
 
-interface Message {
-  id: string;
-  sender: "user" | "assistant";
-  text: string;
-  timestamp: Date;
-}
-
 export default function NotebookPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -23,42 +16,7 @@ export default function NotebookPage() {
 
   const { project, isLoading, isError, error } = useGetProjectById(projectId!);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
-
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      sender: "assistant",
-      text: "Hi, ask me anything about your project documents.",
-      timestamp: new Date(),
-    },
-  ]);
   const [inputValue, setInputValue] = useState("");
-
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      sender: "user",
-      text: inputValue,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
-
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          sender: "assistant",
-          text: `Mock response: I got your query "${userMessage.text}". Full LLM integration is in progress.`,
-          timestamp: new Date(),
-        },
-      ]);
-    }, 1000);
-  };
 
   if (isLoading) {
     return (
@@ -118,10 +76,9 @@ export default function NotebookPage() {
           }}
         >
           <ChatArea
-            messages={messages}
+            projectId={projectId!}
             inputValue={inputValue}
             setInputValue={setInputValue}
-            handleSendMessage={handleSendMessage}
           />
         </Box>
 

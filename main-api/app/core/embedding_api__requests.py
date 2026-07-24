@@ -19,7 +19,6 @@ class DeleteEmbeddingsDTO(BaseModel):
 class SearchDTO(BaseModel):
     prompt: str
     project_id: uuid.UUID
-    file_id: uuid.UUID
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 load_dotenv(BASE_DIR / ".env", override=True)

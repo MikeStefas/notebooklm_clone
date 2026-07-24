@@ -1,9 +1,10 @@
 import os
 import uuid
-from sqlmodel import Session, select
-from fastapi import HTTPException, UploadFile
+from loguru import logger
+from sqlmodel import Session
+from fastapi import HTTPException
 from app.core.db import Project as ProjectModel, File as FileModel, FileStatus
-from app.core.minio_client import upload_to_minio, delete_from_minio, create_presigned_get_url, create_presigned_post
+from app.core.minio_client import delete_from_minio, create_presigned_get_url, create_presigned_post
 from app.core.embedding_api__requests import request_embed, EmbedFileDTO, request_delete, DeleteEmbeddingsDTO
 from app.helpers.validate_db import validate_project_access, validate_file_access, validate_project_exists
 
@@ -26,7 +27,6 @@ class FileService:
 
         key = f"{project_id}/{new_file.id}/{filename}"
         content_type = content_type or "application/octet-stream"
-        # HTTP call to MinIO BEFORE touching the session
         post_data = create_presigned_post(BUCKET_NAME, key, content_type=content_type)
 
         if not post_data:
@@ -112,7 +112,6 @@ class FileService:
         try:
             await request_embed(EmbedFileDTO(project_id=project_id, file_id=file_id, file_name=file_name))
         except Exception as e:
-            from loguru import logger
             logger.exception(f"Error triggering embedding service: {e}")
             selected_file.status = FileStatus.FAILED
             session.add(selected_file)
